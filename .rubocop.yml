@@ -1,0 +1,10 @@
+require:
+  - rubocop-performance
+  - rubocop-rake
+  - rubocop-minitest
+
+AllCops:
+  TargetRubyVersion: 3.3
+  NewCops: enable
+  Exclude:
+    - "test/integration/support/generated_pb/*"
