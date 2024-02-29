@@ -7,13 +7,24 @@ module GrpcInterceptors
     # https://github.com/grpc/grpc/blob/master/src/ruby/lib/grpc/generic/interceptors.rb
     class OpenTelemetryTracingInstrument < ::GRPC::ServerInterceptor
       def request_response(request: nil, call: nil, method: nil)
+        parent_context = OpenTelemetry.propagation.extract(call.metadata)
         route_name = GrpcHelper.route_name(method)
         attributes = tracing_attributes(method)
         kind = OpenTelemetry::Trace::SpanKind::SERVER
+        span = GrpcHelper.tracer.start_span(
+          route_name,
+          with_parent: parent_context,
+          attributes: attributes,
+          kind: kind
+        )
 
-        GrpcHelper.tracer.in_span(route_name, attributes: attributes, kind: kind) do
-          yield
-        end
+        yield
+      rescue StandardError => e
+        OpenTelemetry.handle_error(exception: e)
+
+        raise e
+      ensure
+        span&.finish
       end
 
       # def client_streamer(call: nil, method: nil)
