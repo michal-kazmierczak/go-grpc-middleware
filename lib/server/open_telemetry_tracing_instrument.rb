@@ -19,6 +19,8 @@ module GrpcInterceptors
         )
 
         yield
+
+        span.finish
       rescue StandardError => e
         OpenTelemetry.handle_error(exception: e)
 
