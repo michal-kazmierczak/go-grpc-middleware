@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |spec|
   spec.name = 'grpc_interceptors'
-  spec.version = '0.1.1'
+  spec.version = '0.1.2'
   spec.authors = ['michal-kazmierczak']
   spec.homepage = 'https://github.com/michal-kazmierczak/ruby-grpc-interceptors'
   spec.summary = 'A collection of Ruby interceptors (middlewares) for gRPC servers and clients.'
@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.license = 'MIT'
 
   spec.files = Dir.glob('lib/**/*.rb') + Dir.glob('*.md') + ['LICENSE']
-  spec.require_paths = ['.']
+  spec.require_paths = ['lib']
 
   spec.metadata['allowed_push_host'] = 'https://rubygems.org'
 
