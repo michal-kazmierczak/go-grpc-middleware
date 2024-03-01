@@ -13,12 +13,10 @@ module Support
       @server_opts[:poll_period] ||= 1
       @server = GRPC::RpcServer.new(**@server_opts)
       @server_port = @server.add_http2_port(
-        "localhost:0", :this_port_is_insecure
+        'localhost:0', :this_port_is_insecure
       )
       @server.handle(@service)
-      # rubocop:disable ThreadSafety/NewThread
       @server_thread = Thread.new { @server.run }
-      # rubocop:enable ThreadSafety/NewThread
       @server.wait_till_running
       @server_port
     end

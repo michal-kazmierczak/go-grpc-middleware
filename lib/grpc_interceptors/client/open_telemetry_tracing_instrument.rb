@@ -30,7 +30,7 @@ module GrpcInterceptors
       private
 
       def tracing_attributes(method)
-        method_parts = method.to_s.sub(%r{^\/}, '').split('/')
+        method_parts = method.to_s.sub(%r{^/}, '').split('/')
         service_name = method_parts.shift
         method_name = method_parts.join('/')
 

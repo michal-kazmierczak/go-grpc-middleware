@@ -7,10 +7,10 @@ module GrpcInterceptors
         start_time = Time.now
         code = GRPC::Core::StatusCodes::OK
         labels = common_labels(method)
-        labels.merge!(grpc_type: 'unary')
+        labels[:grpc_type] = 'unary'
 
         yield
-      rescue => e
+      rescue StandardError => e
         code = e.is_a?(GRPC::BadStatus) ? e.code : GRPC::Core::StatusCodes::UNKNOWN
         raise
       ensure

@@ -26,7 +26,7 @@ module GrpcInterceptors
 
         raise e
       ensure
-        span&.finish
+        span.finish if span.recording?
       end
 
       # def client_streamer(call: nil, method: nil)

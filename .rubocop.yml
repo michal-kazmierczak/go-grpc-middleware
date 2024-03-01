@@ -4,7 +4,22 @@ require:
   - rubocop-minitest
 
 AllCops:
-  TargetRubyVersion: 3.3
+  TargetRubyVersion: 3.0 # don't suggest newer versions syntax
   NewCops: enable
   Exclude:
     - "test/integration/support/generated_pb/*"
+
+Gemspec/DevelopmentDependencies:
+  Enabled: false
+Gemspec/RequiredRubyVersion:
+  Enabled: false
+Metrics/BlockLength:
+  Enabled: false
+Metrics/ClassLength:
+  Enabled: false
+Metrics/MethodLength:
+  Enabled: false
+Style/Documentation:
+  Exclude:
+    - "**/test/**/*"
+    - "**/*test*"

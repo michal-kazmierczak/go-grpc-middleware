@@ -24,10 +24,11 @@ describe GrpcInterceptors::Client::OpenTelemetryTracingInstrument do
     exporter.reset
   end
 
-  describe "#request_response" do
+  describe '#request_response' do
+    let(:ping_request) { Support::PingRequest.new }
+
     it 'records span' do
-      ping_request = Support::PingRequest.new
-      result = @stub.request_response_ping(ping_request)
+      @stub.request_response_ping(ping_request)
 
       expect(exporter.finished_spans.size).must_equal(1)
 
@@ -37,9 +38,9 @@ describe GrpcInterceptors::Client::OpenTelemetryTracingInstrument do
       expect(span.total_recorded_attributes).must_equal(3)
       expect(span.attributes).must_equal(
         {
-          "rpc.system" => "grpc",
-          "rpc.service" => "support.PingServer",
-          "rpc.method"=>"RequestResponsePing"
+          'rpc.system' => 'grpc',
+          'rpc.service' => 'support.PingServer',
+          'rpc.method' => 'RequestResponsePing'
         }
       )
     end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 require_relative '../support/ping_server_impl'
 require_relative '../support/grpc_server_runner'
@@ -25,7 +27,7 @@ describe GrpcInterceptors::Server::StatsDMetrics do
     server_runner.stop
   end
 
-  describe "#request_response" do
+  describe '#request_response' do
     it 'emits histogram metric' do
       ping_request = Support::PingRequest.new
       metrics = capture_statsd_calls do
@@ -36,9 +38,9 @@ describe GrpcInterceptors::Server::StatsDMetrics do
       assert_equal 'grpc_latency_seconds', metrics.first.name
       expect(metrics.first.tags).must_equal(
         [
-          "grpc_method:request_response_ping",
-          "grpc_service:support.PingServer",
-          "grpc_type:unary"
+          'grpc_method:request_response_ping',
+          'grpc_service:support.PingServer',
+          'grpc_type:unary'
         ]
       )
     end

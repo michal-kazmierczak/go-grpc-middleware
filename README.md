@@ -82,3 +82,10 @@ GRPC::RpcServer.new(
 ### Integration tests
 
 Integration tests require some infrastructure to mimic gRPC client and server. For this purpose, there's a simple service definition in the `test/integration/support/ping.proto`. To re-generate `*_pb.rb` files run `bundle exec rake proto:generate`.
+
+### Releasing
+
+```
+bundle exec rake build
+bundle exec rake release
+```

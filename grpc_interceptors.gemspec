@@ -9,8 +9,8 @@ Gem::Specification.new do |spec|
   spec.description = 'A collection of Ruby interceptors (middlewares) for gRPC servers and clients.'
   spec.license = 'MIT'
 
-  spec.files = ['lib/grpc_interceptors.rb']
-  spec.require_paths = ['lib']
+  spec.files = Dir.glob('lib/**/*.rb') + Dir.glob('*.md') + ['LICENSE']
+  spec.require_paths = ['.']
 
   spec.metadata['allowed_push_host'] = 'https://rubygems.org'
 

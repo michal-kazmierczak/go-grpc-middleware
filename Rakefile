@@ -2,6 +2,7 @@
 
 require 'minitest/test_task'
 require 'rubocop/rake_task'
+require 'bundler/gem_tasks'
 
 RuboCop::RakeTask.new
 
@@ -15,10 +16,10 @@ end
 namespace :proto do
   desc 'Generate test protobuf stubs'
   task :generate do |_task, _args|
-    system 'bundle exec grpc_tools_ruby_protoc'\
-           ' --ruby_out=.'\
-           ' --grpc_out=.'\
-           ' ./test/integration/support/proto/ping.proto'
+    system 'bundle exec grpc_tools_ruby_protoc ' \
+           '--ruby_out=. ' \
+           '--grpc_out=. ' \
+           './test/integration/support/proto/ping.proto'
     # sed -E -i '' "s/require .*\/(.*_pb)'/require_relative '\1'/g" test/integration/support/proto/ping_services_pb.rb
   end
 
