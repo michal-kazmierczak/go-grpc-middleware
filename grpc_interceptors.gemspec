@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |spec|
   spec.name = 'grpc_interceptors'
-  spec.version = '0.1.0'
+  spec.version = '0.1.1'
   spec.authors = ['michal-kazmierczak']
   spec.homepage = 'https://github.com/michal-kazmierczak/ruby-grpc-interceptors'
   spec.summary = 'A collection of Ruby interceptors (middlewares) for gRPC servers and clients.'
