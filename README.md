@@ -29,7 +29,11 @@ _WIP_
 
 ### Logging
 
-When the `LOG_LEVEL` env variable is set to `INFO` then the server logs out
+When the `LOG_LEVEL` env variable is set to `INFO` then the server logs out.
+
+When the `LOG_LEVEL` env variable is set to `DEBUG` then the server additionally adds the request to the log message. (Note, adding the response is currently blocked by [this gRPC issue](https://github.com/grpc/grpc/pull/26547).)
+
+
 
 ### StatsD metrics
 

@@ -11,8 +11,8 @@ Minitest::Reporters.use!
 
 Dir['./lib/**/*.rb'].each { |file| require file }
 
-EXPORTER = OpenTelemetry::SDK::Trace::Export::InMemorySpanExporter.new
-span_processor = OpenTelemetry::SDK::Trace::Export::SimpleSpanProcessor.new(EXPORTER)
+OTEL_EXPORTER = OpenTelemetry::SDK::Trace::Export::InMemorySpanExporter.new
+span_processor = OpenTelemetry::SDK::Trace::Export::SimpleSpanProcessor.new(OTEL_EXPORTER)
 
 OpenTelemetry::SDK.configure do |c|
   c.add_span_processor(span_processor)

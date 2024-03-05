@@ -37,8 +37,8 @@ class PingServerImpl < Support::PingServer::Service
 
     if code > ::GRPC::Core::StatusCodes::OK
       raise ::GRPC::BadStatus.new_status_exception(code, 'test exception')
+    elsif code < ::GRPC::Core::StatusCodes::OK
+      raise StandardError, code.to_s
     end
-
-    raise code.to_s if code < ::GRPC::Core::StatusCodes::OK
   end
 end

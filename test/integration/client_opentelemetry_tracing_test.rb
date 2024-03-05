@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 require_relative '../support/ping_server_impl'
 require_relative '../support/grpc_server_runner'
 
 describe GrpcInterceptors::Client::OpenTelemetryTracingInstrument do
-  let(:exporter) { EXPORTER }
+  let(:otel_exporter) { OTEL_EXPORTER }
   let(:server_runner) do
     Support::GrpcServerRunner.new
   end
@@ -21,7 +23,7 @@ describe GrpcInterceptors::Client::OpenTelemetryTracingInstrument do
   end
   after do
     server_runner.stop
-    exporter.reset
+    otel_exporter.reset
   end
 
   describe '#request_response' do
@@ -30,18 +32,20 @@ describe GrpcInterceptors::Client::OpenTelemetryTracingInstrument do
     it 'records span' do
       @stub.request_response_ping(ping_request)
 
-      expect(exporter.finished_spans.size).must_equal(1)
+      assert_equal 1, otel_exporter.finished_spans.size
 
-      span = exporter.finished_spans.first
-      expect(span.name).must_equal('/support.PingServer/RequestResponsePing')
-      expect(span.kind).must_equal(:client)
-      expect(span.total_recorded_attributes).must_equal(3)
-      expect(span.attributes).must_equal(
+      span = otel_exporter.finished_spans.first
+
+      assert_equal '/support.PingServer/RequestResponsePing', span.name
+      assert_equal :client, span.kind
+      assert_equal 3, span.total_recorded_attributes
+      assert_equal(
         {
           'rpc.system' => 'grpc',
           'rpc.service' => 'support.PingServer',
           'rpc.method' => 'RequestResponsePing'
-        }
+        },
+        span.attributes
       )
     end
   end

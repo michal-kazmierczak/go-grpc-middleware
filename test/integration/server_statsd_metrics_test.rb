@@ -36,12 +36,13 @@ describe GrpcInterceptors::Server::StatsDMetrics do
 
       assert_equal 1, metrics.length
       assert_equal 'grpc_latency_seconds', metrics.first.name
-      expect(metrics.first.tags).must_equal(
+      assert_equal(
         [
           'grpc_method:request_response_ping',
           'grpc_service:support.PingServer',
           'grpc_type:unary'
-        ]
+        ],
+        metrics.first.tags
       )
     end
   end

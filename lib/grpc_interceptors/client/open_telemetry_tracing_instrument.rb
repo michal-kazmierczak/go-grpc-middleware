@@ -9,7 +9,7 @@ module GrpcInterceptors
         kind = OpenTelemetry::Trace::SpanKind::CLIENT
         attributes = tracing_attributes(method)
 
-        GrpcHelper.tracer.in_span(method, kind: kind, attributes: attributes) do
+        Common::OpenTelemetryHelper.tracer.in_span(method, kind: kind, attributes: attributes) do
           OpenTelemetry.propagation.inject(metadata)
           yield
         end
@@ -30,14 +30,13 @@ module GrpcInterceptors
       private
 
       def tracing_attributes(method)
-        method_parts = method.to_s.sub(%r{^/}, '').split('/')
-        service_name = method_parts.shift
-        method_name = method_parts.join('/')
+        service_name = Common::GrpcHelper.service_name_from_client(method)
+        method_name = Common::GrpcHelper.method_name_from_client(method)
 
         {
           OpenTelemetry::SemanticConventions::Trace::RPC_SYSTEM => 'grpc',
           OpenTelemetry::SemanticConventions::Trace::RPC_SERVICE => service_name,
-          OpenTelemetry::SemanticConventions::Trace::RPC_METHOD => method_name,
+          OpenTelemetry::SemanticConventions::Trace::RPC_METHOD => method_name
         }
       end
     end

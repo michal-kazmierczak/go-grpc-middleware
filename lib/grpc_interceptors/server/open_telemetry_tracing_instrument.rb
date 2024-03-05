@@ -6,27 +6,20 @@ module GrpcInterceptors
   module Server
     # https://github.com/grpc/grpc/blob/master/src/ruby/lib/grpc/generic/interceptors.rb
     class OpenTelemetryTracingInstrument < ::GRPC::ServerInterceptor
-      def request_response(request: nil, call: nil, method: nil)
-        parent_context = OpenTelemetry.propagation.extract(call.metadata)
-        route_name = GrpcHelper.route_name(method)
+      def request_response(request: nil, call: nil, method: nil, &block)
+        context = OpenTelemetry.propagation.extract(call.metadata)
+        route_name = Common::GrpcHelper.route_name_from_server(method)
         attributes = tracing_attributes(method)
         kind = OpenTelemetry::Trace::SpanKind::SERVER
-        span = GrpcHelper.tracer.start_span(
-          route_name,
-          with_parent: parent_context,
-          attributes: attributes,
-          kind: kind
-        )
 
-        yield
-
-        span.finish
-      rescue StandardError => e
-        OpenTelemetry.handle_error(exception: e)
-
-        raise e
-      ensure
-        span.finish if span.recording?
+        OpenTelemetry::Context.with_current(context) do
+          Common::OpenTelemetryHelper.tracer.in_span(
+            route_name,
+            attributes: attributes,
+            kind: kind,
+            &block
+          )
+        end
       end
 
       # def client_streamer(call: nil, method: nil)
@@ -44,10 +37,13 @@ module GrpcInterceptors
       private
 
       def tracing_attributes(method)
+        service_name = Common::GrpcHelper.service_name_from_server(method)
+        method_name = Common::GrpcHelper.method_name_from_server(method)
+
         {
           OpenTelemetry::SemanticConventions::Trace::RPC_SYSTEM => 'grpc',
-          OpenTelemetry::SemanticConventions::Trace::RPC_SERVICE => method.owner.service_name,
-          OpenTelemetry::SemanticConventions::Trace::RPC_METHOD => method.original_name.to_s,
+          OpenTelemetry::SemanticConventions::Trace::RPC_SERVICE => service_name,
+          OpenTelemetry::SemanticConventions::Trace::RPC_METHOD => method_name
         }
       end
     end

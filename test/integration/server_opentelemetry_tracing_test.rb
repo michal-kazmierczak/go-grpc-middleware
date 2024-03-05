@@ -5,7 +5,7 @@ require_relative '../support/ping_server_impl'
 require_relative '../support/grpc_server_runner'
 
 describe GrpcInterceptors::Server::OpenTelemetryTracingInstrument do
-  let(:exporter) { EXPORTER }
+  let(:otel_exporter) { OTEL_EXPORTER }
   let(:server_runner) do
     Support::GrpcServerRunner.new(
       server_opts: {
@@ -24,27 +24,30 @@ describe GrpcInterceptors::Server::OpenTelemetryTracingInstrument do
   end
   after do
     server_runner.stop
-    exporter.reset
+    otel_exporter.reset
   end
 
   describe '#request_response' do
     let(:ping_request) { Support::PingRequest.new }
 
     it 'records span' do
-      @stub.request_response_ping(ping_request)
+      response = @stub.request_response_ping(ping_request)
 
-      expect(exporter.finished_spans.size).must_equal(1)
+      assert_equal 1, otel_exporter.finished_spans.size
+      assert_instance_of Support::PingResponse, response
 
-      span = exporter.finished_spans.first
-      expect(span.name).must_equal('/support.PingServer/request_response_ping')
-      expect(span.kind).must_equal(:server)
-      expect(span.total_recorded_attributes).must_equal(3)
-      expect(span.attributes).must_equal(
+      span = otel_exporter.finished_spans.first
+
+      assert_equal '/support.PingServer/request_response_ping', span.name
+      assert_equal :server, span.kind
+      assert_equal 3, span.total_recorded_attributes
+      assert_equal(
         {
           'rpc.system' => 'grpc',
           'rpc.service' => 'support.PingServer',
-          'rpc.method' => 'request_response_ping' # TODO: shall this me camelized?
-        }
+          'rpc.method' => 'request_response_ping' # TODO: shall this be camelized?
+        },
+        span.attributes
       )
     end
 
@@ -55,11 +58,12 @@ describe GrpcInterceptors::Server::OpenTelemetryTracingInstrument do
         @stub.request_response_ping(ping_request, metadata: ctx)
       end
 
-      expect(exporter.finished_spans.size).must_equal(2)
+      assert_equal 2, otel_exporter.finished_spans.size
 
-      parent_span = exporter.finished_spans.find{ |s| s.kind == :internal }
-      child_span = exporter.finished_spans.find{ |s| s.kind == :server }
-      expect(child_span.parent_span_id).must_equal(parent_span.span_id)
+      parent_span = otel_exporter.finished_spans.find { |s| s.kind == :internal }
+      child_span = otel_exporter.finished_spans.find { |s| s.kind == :server }
+
+      assert_equal parent_span.span_id, child_span.parent_span_id
     end
   end
 

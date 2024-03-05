@@ -13,6 +13,8 @@ Gemspec/DevelopmentDependencies:
   Enabled: false
 Gemspec/RequiredRubyVersion:
   Enabled: false
+Metrics/AbcSize:
+  Enabled: false
 Metrics/BlockLength:
   Enabled: false
 Metrics/ClassLength:
