@@ -42,13 +42,6 @@ module GrpcInterceptors
         method_parts = method.to_s.sub(%r{^/}, '').split('/')
         method_parts[1..].join('/')
       end
-
-      def self.proto_to_json(proto)
-        proto.to_json(
-          emit_defaults: true,
-          preserve_proto_fieldnames: true
-        )
-      end
     end
   end
 end

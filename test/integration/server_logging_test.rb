@@ -90,7 +90,7 @@ describe GrpcInterceptors::Server::Logging do
       refute received_log.key?('backtrace')
       refute received_log.key?('error')
 
-      logged_request = JSON(received_log['request'])
+      logged_request = received_log['request']
 
       assert_equal 'Ping', logged_request['value']
     end
