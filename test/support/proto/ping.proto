@@ -16,5 +16,4 @@ message PingRequest {
 
 message PingResponse {
   string value = 1;
-  int32 counter = 2;
 }

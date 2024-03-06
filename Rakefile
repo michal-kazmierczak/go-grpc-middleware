@@ -19,14 +19,14 @@ namespace :proto do
     system 'bundle exec grpc_tools_ruby_protoc ' \
            '--ruby_out=. ' \
            '--grpc_out=. ' \
-           './test/integration/support/proto/ping.proto'
-    # sed -E -i '' "s/require .*\/(.*_pb)'/require_relative '\1'/g" test/integration/support/proto/ping_services_pb.rb
+           './test/support/proto/ping.proto'
+    # sed -E -i '' "s/require .*\/(.*_pb)'/require_relative '\1'/g" test/support/proto/ping_services_pb.rb
   end
 
   desc 'Generate test protobuf stubs'
   task :lint do |_task, _args|
     # make sure that you have the buf binary installed https://buf.build/
-    system 'buf lint test/integration/support/ping.proto'
+    system 'buf lint test/support/proto/ping.proto'
   end
 end
 
