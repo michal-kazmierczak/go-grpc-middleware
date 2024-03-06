@@ -96,6 +96,30 @@ describe GrpcInterceptors::Client::Logging do
     end
   end
 
+  describe 'when server returns error' do
+    let(:ping_request) do
+      Support::PingRequest.new(
+        error_code: GRPC::Core::StatusCodes::INVALID_ARGUMENT
+      )
+    end
+
+    it 'attaches the error to the log' do
+      response = assert_raises GRPC::InvalidArgument do
+        @stub.request_response_ping(ping_request)
+      end
+
+      assert_instance_of GRPC::InvalidArgument, response
+      assert_instance_of Integer, received_log['pid']
+      assert_equal 'client', received_log['grpc.component']
+      assert_equal 'support.PingServer', received_log['grpc.service']
+      assert_equal 'RequestResponsePing', received_log['grpc.method']
+      assert_equal 'unary', received_log['grpc.method_type']
+      assert_equal GRPC::Core::StatusCodes::INVALID_ARGUMENT, received_log['grpc.code']
+      assert_instance_of Array, received_log['backtrace']
+      assert_equal 'GRPC::InvalidArgument', received_log['error']
+    end
+  end
+
   private
 
   def formatter_helper(_severity, _datetime, _progname, msg)
