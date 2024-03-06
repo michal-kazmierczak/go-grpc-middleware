@@ -14,10 +14,6 @@ Gem::Specification.new do |spec|
 
   spec.metadata['allowed_push_host'] = 'https://rubygems.org'
 
-  spec.add_dependency 'opentelemetry-api', '>=  1.0.0'
-  spec.add_dependency 'opentelemetry-instrumentation-base', '~> 0.22.3'
-  spec.add_dependency 'statsd-instrument', '~> 3.6'
-
   spec.add_development_dependency 'grpc', '1.61'
   spec.add_development_dependency 'grpc-tools', '1.61'
   spec.add_development_dependency 'guard', '~> 2.18'
@@ -33,5 +29,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rubocop-performance', '~> 1.20'
   spec.add_development_dependency 'rubocop-rake', '~> 0.6'
   spec.add_development_dependency 'simplecov', '~> 0.22'
+  spec.add_development_dependency 'statsd-instrument', '~> 3.6'
   spec.metadata['rubygems_mfa_required'] = 'true'
 end
