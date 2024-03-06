@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../common/grpc_helper'
+require_relative '../common/opentelemetry_helper'
 
 module GrpcInterceptors
   module Server
@@ -8,8 +9,8 @@ module GrpcInterceptors
     class OpenTelemetryTracingInstrument < ::GRPC::ServerInterceptor
       def request_response(request: nil, call: nil, method: nil, &block)
         context = OpenTelemetry.propagation.extract(call.metadata)
-        route_name = Common::GrpcHelper.route_name_from_server(method)
-        attributes = tracing_attributes(method)
+        route_name = Common::GrpcHelper.route_name(method)
+        attributes = Common::OpenTelemetryHelper.tracing_attributes(method)
         kind = OpenTelemetry::Trace::SpanKind::SERVER
 
         OpenTelemetry::Context.with_current(context) do
@@ -33,19 +34,6 @@ module GrpcInterceptors
       # def bidi_streamer(_requests: nil, call: nil, method: nil)
       #  yield
       # end
-
-      private
-
-      def tracing_attributes(method)
-        service_name = Common::GrpcHelper.service_name_from_server(method)
-        method_name = Common::GrpcHelper.method_name_from_server(method)
-
-        {
-          OpenTelemetry::SemanticConventions::Trace::RPC_SYSTEM => 'grpc',
-          OpenTelemetry::SemanticConventions::Trace::RPC_SERVICE => service_name,
-          OpenTelemetry::SemanticConventions::Trace::RPC_METHOD => method_name
-        }
-      end
     end
   end
 end

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative '../common/grpc_helper'
+
 module GrpcInterceptors
   module Server
     class StatsDMetrics < ::GRPC::ServerInterceptor
@@ -32,8 +34,8 @@ module GrpcInterceptors
 
       def common_labels(method)
         {
-          grpc_method: method.original_name.to_s,
-          grpc_service: method.owner.service_name
+          grpc_method: Common::GrpcHelper.method_name(method),
+          grpc_service: Common::GrpcHelper.service_name(method)
         }
       end
     end

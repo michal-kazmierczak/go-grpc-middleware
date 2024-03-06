@@ -32,7 +32,7 @@ module GrpcInterceptors
 
       private
 
-      # in case of an exception, it logs out on the ERROR level including error details
+      # if the server responds with error, then the error is attached to the log
       # if the current level is INFO, then it logs out basic facts
       # if the current level is DEBUG, then it additionally includes the request
       def log(request, method, method_type)
@@ -52,8 +52,9 @@ module GrpcInterceptors
           payload['error'] = e.class.to_s
           payload['error_message'] = e.message
           payload['backtrace'] = e.backtrace
-          @logger.error(payload)
-        elsif @logger.level == Logger::Severity::INFO
+        end
+
+        if @logger.level == Logger::Severity::INFO
           @logger.info(payload)
         elsif @logger.level == Logger::Severity::DEBUG
           payload['request'] = Common::GrpcHelper.proto_to_json(request)
