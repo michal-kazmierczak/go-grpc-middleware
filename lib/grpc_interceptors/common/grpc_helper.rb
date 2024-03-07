@@ -43,10 +43,16 @@ module GrpcInterceptors
         method_parts[1..].join('/')
       end
 
-      def self.proto_to_json(proto)
-        proto.to_json(
-          emit_defaults: true,
-          preserve_proto_fieldnames: true
+      # converts proto message to a Ruby hash preserving the original fields' names
+      # and including default values
+      # WARNING! It can be slow and not 100% accurate. In this gem it's onyl used in the DEBUG mode
+      # related comment # related comment https://github.com/protocolbuffers/protobuf/issues/6755#issuecomment-733880977
+      def self.proto_to_h(proto)
+        JSON(
+          proto.to_json(
+            emit_defaults: true,
+            preserve_proto_fieldnames: true
+          )
         )
       end
     end
