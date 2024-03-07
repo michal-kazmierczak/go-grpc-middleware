@@ -54,7 +54,7 @@ module GrpcInterceptors
         elsif @logger.level == Logger::Severity::INFO
           @logger.info(payload)
         elsif @logger.level == Logger::Severity::DEBUG
-          payload['request'] = request.to_h
+          payload['request'] = Common::GrpcHelper.proto_to_json(request)
           @logger.debug(payload)
         end
       end
