@@ -2,10 +2,38 @@
 
 module GrpcInterceptors
   module Common
-    module Logger
+    module Logging
+
+      def self.yield_and_log(
+        logger: nil, request: nil, method: nil, method_type: nil, kind: nil
+      )
+        grpc_code = ::GRPC::Core::StatusCodes::OK
+        response = yield
+      rescue StandardError => e
+        grpc_code = e.is_a?(::GRPC::BadStatus) ? e.code : ::GRPC::Core::StatusCodes::UNKNOWN
+        extra_fields = {
+          'error' => e.class.to_s,
+          'error_message' => e.message,
+          'backtrace' => e.backtrace
+        }
+
+        raise
+      ensure
+        extra_fields ||= {}
+        extra_fields['grpc.code'] = grpc_code
+
+        if logger.level == ::Logger::Severity::DEBUG && !response.nil?
+          extra_fields['response'] = Common::GrpcHelper.proto_to_h(response)
+        end
+
+        log(
+          logger: logger, request: request, method: method,
+          method_type: method_type, kind: kind, extra_fields: extra_fields
+        )
+      end
 
       ##
-      # Log a gRPC interaction from the client side.
+      # Log a gRPC interaction.
       #
       # If the current log level is INFO, then it logs out basic facts.
       # If the current log level is DEBUG, then it additionally adds to the log request and response.
@@ -16,32 +44,16 @@ module GrpcInterceptors
       # @param [String] method_type The used method_type, unary or one of the streams
       #
       def self.log(
-        logger: nil, request: nil, method: nil, method_type: nil, kind: nil
+        logger: nil, request: nil, method: nil, method_type: nil, kind: nil,
+        extra_fields: {}
       )
         payload = build_payload(method, method_type, kind)
+        payload.merge!(extra_fields)
 
-        if block_given?
-          grpc_code = ::GRPC::Core::StatusCodes::OK
-          begin
-            response = yield
-          rescue StandardError => e
-            grpc_code = e.is_a?(::GRPC::BadStatus) ? e.code : ::GRPC::Core::StatusCodes::UNKNOWN
-
-            payload['error'] = e.class.to_s
-            payload['error_message'] = e.message
-            payload['backtrace'] = e.backtrace
-
-            raise
-          end
-        end
-      ensure
-        payload['grpc_code'] = grpc_code unless grpc_code.nil?
-
-        if logger.level == Logger::Severity::INFO
+        if logger.level == ::Logger::Severity::INFO
           logger.info(payload)
-        elsif logger.level == Logger::Severity::DEBUG
+        elsif logger.level == ::Logger::Severity::DEBUG
           payload['request'] = Common::GrpcHelper.proto_to_h(request) unless request.nil?
-          payload['response'] = Common::GrpcHelper.proto_to_h(response) unless response.nil?
           logger.debug(payload)
         end
       end

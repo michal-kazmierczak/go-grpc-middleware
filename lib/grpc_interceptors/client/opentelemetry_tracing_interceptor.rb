@@ -5,13 +5,12 @@ require_relative '../common/opentelemetry_helper'
 
 module GrpcInterceptors
   module Client
-    class OpenTelemetryTracingInstrument < ::GRPC::ClientInterceptor
+    class OpenTelemetryTracingInterceptor < ::GRPC::ClientInterceptor
       def request_response(request: nil, call: nil, method: nil, metadata: nil)
-        kind = OpenTelemetry::Trace::SpanKind::CLIENT
         attributes = Common::OpenTelemetryHelper.tracing_attributes(method)
 
         Common::OpenTelemetryHelper.tracer.in_span(
-          method, kind: kind, attributes: attributes
+          method, kind: KIND, attributes: attributes
         ) do
           OpenTelemetry.propagation.inject(metadata)
           yield

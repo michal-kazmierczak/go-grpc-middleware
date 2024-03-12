@@ -6,18 +6,17 @@ require_relative '../common/opentelemetry_helper'
 module GrpcInterceptors
   module Server
     # https://github.com/grpc/grpc/blob/master/src/ruby/lib/grpc/generic/interceptors.rb
-    class OpenTelemetryTracingInstrument < ::GRPC::ServerInterceptor
+    class OpenTelemetryTracingInterceptor < ::GRPC::ServerInterceptor
       def request_response(request: nil, call: nil, method: nil, &block)
         context = OpenTelemetry.propagation.extract(call.metadata)
         route_name = Common::GrpcHelper.route_name(method)
         attributes = Common::OpenTelemetryHelper.tracing_attributes(method)
-        kind = OpenTelemetry::Trace::SpanKind::SERVER
 
         OpenTelemetry::Context.with_current(context) do
           Common::OpenTelemetryHelper.tracer.in_span(
             route_name,
             attributes: attributes,
-            kind: kind,
+            kind: KIND,
             &block
           )
         end

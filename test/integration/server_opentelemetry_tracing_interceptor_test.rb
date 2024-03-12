@@ -4,13 +4,13 @@ require 'test_helper'
 require_relative '../support/ping_server_impl'
 require_relative '../support/grpc_server_runner'
 
-describe GrpcInterceptors::Server::OpenTelemetryTracingInstrument do
+describe GrpcInterceptors::Server::OpenTelemetryTracingInterceptor do
   let(:otel_exporter) { OTEL_EXPORTER }
   let(:server_runner) do
     Support::GrpcServerRunner.new(
       server_opts: {
         interceptors: [
-          GrpcInterceptors::Server::OpenTelemetryTracingInstrument.new
+          GrpcInterceptors::Server::OpenTelemetryTracingInterceptor.new
         ]
       }
     )

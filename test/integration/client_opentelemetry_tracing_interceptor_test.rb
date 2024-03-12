@@ -4,7 +4,7 @@ require 'test_helper'
 require_relative '../support/ping_server_impl'
 require_relative '../support/grpc_server_runner'
 
-describe GrpcInterceptors::Client::OpenTelemetryTracingInstrument do
+describe GrpcInterceptors::Client::OpenTelemetryTracingInterceptor do
   let(:otel_exporter) { OTEL_EXPORTER }
   let(:server_runner) do
     Support::GrpcServerRunner.new
@@ -17,7 +17,7 @@ describe GrpcInterceptors::Client::OpenTelemetryTracingInstrument do
       "localhost:#{server_port}",
       :this_channel_is_insecure,
       interceptors: [
-        GrpcInterceptors::Client::OpenTelemetryTracingInstrument.new
+        GrpcInterceptors::Client::OpenTelemetryTracingInterceptor.new
       ]
     )
   end

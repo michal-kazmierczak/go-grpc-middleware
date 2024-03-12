@@ -14,6 +14,8 @@ class PingServerImpl < Support::PingServer::Service
     call.each_remote_read do |ping_request|
       raise_exception(ping_request)
     end
+
+    PingResponse.new(value: 'Pong!')
   end
 
   def server_stream_ping(ping_request, _call)
